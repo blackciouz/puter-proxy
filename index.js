@@ -14,11 +14,20 @@ app.post('/puter-chat', async (req, res) => {
 
   let browser;
   try {
-    // Lancement de Puppeteer avec des arguments recommandés pour Render/Linux
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-    });
+// Importer le navigateur optimisé
+const chromium = require('@sparticuz/chromium');
+
+browser = await puppeteer.launch({
+  args: [
+    ...chromium.args,
+    '--hide-scrollbars',
+    '--disable-web-security',
+    '--disable-features=VizDisplayCompositor'
+  ],
+  defaultViewport: chromium.viewport,
+  executablePath: await chromium.executablePath(),
+  headless: chromium.headless,
+});
     const page = await browser.newPage();
 
     // On injecte le HTML et le script Puter dans la page
